@@ -1,0 +1,16 @@
+[project]
+name = "payment-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "alembic>=1.19.0",
+    "asyncpg>=0.31.0",
+    "fastapi[standard]>=0.141.1",
+    "greenlet>=3.5.4",
+    "psycopg2-binary>=2.9.12",
+    "pydantic>=2.13.4",
+    "ruff>=0.16.1",
+    "sqlalchemy>=2.0.51",
+]
