@@ -11,3 +11,9 @@ class CurrencyEnum(str, Enum):
     RUB = "RUB"
     USD = "USD"
     EUR = "EUR"
+
+
+class OutboxStatusEnum(str, Enum):
+    PENDING = "pending"
+    PUBLISHED = "published"
+    FAILED = "failed"
