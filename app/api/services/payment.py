@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dto.payment import PaymentCreate, PaymentResponse
+from app.models.outbox import Outbox
 from app.models.payment import Payment
 
 
@@ -22,7 +23,25 @@ class PaymentService:
             meta=payment.meta,
         )
         self.db.add(payment)
+
         await self.db.flush()
+
+        event_payload = {
+            "payment_id": str(payment.id),
+            "amount": str(payment.amount),
+            "currency": payment.currency.value,
+            "description": payment.description,
+            "meta": payment.meta,
+            "webhook_url": payment.webhook_url,
+        }
+
+        outbox = Outbox(
+            aggregate_id=payment.id,
+            event_type="payment.created",
+            payload=event_payload,
+        )
+
+        self.db.add(outbox)
         await self.db.commit()
         await self.db.refresh(payment)
         return PaymentResponse.model_validate(payment)
