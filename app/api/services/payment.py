@@ -12,15 +12,14 @@ class PaymentService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def create_payment(self, payment: PaymentCreate) -> PaymentResponse:
+    async def create_payment(self, payment: PaymentCreate, idempotency_key: str) -> PaymentResponse:
         payment = Payment(
             amount=payment.amount,
             currency=payment.currency,
             webhook_url=payment.webhook_url,
-            idempotency_key=payment.idempotency_key,
+            idempotency_key=idempotency_key,
             description=payment.description,
             meta=payment.meta,
-            processed_at=payment.processed_at,
         )
         self.db.add(payment)
         await self.db.flush()
