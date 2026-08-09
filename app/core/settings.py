@@ -34,6 +34,7 @@ class RabbitMQSettings(BaseSettings):
     @property
     def amqp_url(self):
         return AmqpDsn.build(
+            scheme="amqp",
             username=self.user,
             password=self.password.get_secret_value(),
             host=self.host,
