@@ -5,8 +5,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.broker.publisher import publish_payment_created
-from app.core.dependencies.database import DatabaseSession
-from app.dto.outbox import OutboxResponse
 from app.models.outbox import Outbox, OutboxStatusEnum
 
 logging.basicConfig(level=logging.INFO)
@@ -14,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class OutboxService:
-    def __init__(self, db: AsyncSession = DatabaseSession):
+    def __init__(self, db: AsyncSession):
         self.db = db
 
     async def publish(self) -> None:
 
-        result: OutboxResponse = await self.db.execute(
+        result = await self.db.execute(
             select(Outbox)
             .where(
                 Outbox.status == OutboxStatusEnum.PENDING
@@ -28,7 +26,7 @@ class OutboxService:
             .limit(100)
         )
 
-        outbox_events: list[OutboxResponse] = result.scalars().all()
+        outbox_events: list[Outbox] = result.scalars().all()
 
         for outbox_event in outbox_events:
             try:
@@ -38,6 +36,10 @@ class OutboxService:
                 outbox_event.status = OutboxStatusEnum.PUBLISHED
                 outbox_event.published_at = datetime.now(UTC)
             except Exception:
+                logger.exception(
+                    "Failed to publish outbox event %s",
+                    outbox_event.id,
+                )
                 outbox_event.attempts += 1
 
         await self.db.commit()
