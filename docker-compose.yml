@@ -2,24 +2,141 @@ services:
   postgres:
     image: postgres:17
     container_name: payment-service-postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: payment_service
+
+    env_file:
+      - .env.docker
+
     ports:
       - "5432:5432"
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d payment_service_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
 
   rabbitmq:
     image: rabbitmq:4-management
     container_name: payment-service-rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+
+    env_file:
+      - .env.docker
+
     ports:
       - "5672:5672"
       - "15672:15672"
+
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: payment-service-migrate
+
+    env_file:
+      - .env.docker
+
+    command:
+      [
+        "alembic",
+        "upgrade",
+        "head"
+      ]
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: payment-service-api
+
+    env_file:
+      - .env.docker
+
+    command:
+      [
+        "fastapi",
+        "run",
+        "app/main.py",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ]
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+
+
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: payment-service-consumer
+
+    env_file:
+      - .env.docker
+
+    command:
+      [
+        "faststream",
+        "run",
+        "app.consumer.main:app"
+      ]
+
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+
+
+  outbox-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: payment-service-outbox-worker
+
+    env_file:
+      - .env.docker
+
+    command:
+      [
+        "python",
+        "-m",
+        "app.services.outbox.main"
+      ]
+
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+
 
 volumes:
   postgres_data:

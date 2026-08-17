@@ -13,7 +13,6 @@ dependencies = [
     "httpx>=0.28.1",
     "psycopg2-binary>=2.9.12",
     "pydantic>=2.13.4",
-    "ruff>=0.16.1",
     "sqlalchemy>=2.0.51",
 ]
 [tool.fastapi]
@@ -25,6 +24,7 @@ asyncio_mode = "auto"
 
 [dependency-groups]
 dev = [
+    "ruff>=0.16.1",
     "pytest-asyncio>=1.4.0",
     "pytest>=9.1.1",
 ]
