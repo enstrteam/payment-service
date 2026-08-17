@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 class PaymentProcessor:
-
     def __init__(self, db: DatabaseSession) -> None:
         self.db = db
 
@@ -33,7 +32,6 @@ class PaymentProcessor:
         payment.processed_at = datetime.now(UTC)
 
         return payment
-
 
     async def get_payment(
         self,

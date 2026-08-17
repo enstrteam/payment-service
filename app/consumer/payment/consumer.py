@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 
 class PaymentConsumer:
-
     def __init__(self, db: DatabaseSession) -> None:
         self.payment_processor = PaymentProcessor(db)
         self.webhook_service = WebhookService()

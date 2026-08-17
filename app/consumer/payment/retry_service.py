@@ -14,13 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 class RetryService:
-
     MAX_RETRIES = 3
 
     def __init__(self) -> None:
         pass
-
-
 
     def get_retry_count(
         self,
@@ -52,28 +49,24 @@ class RetryService:
         headers["x-retry-count"] = next_retry
 
         if next_retry == 1:
-
             await payment_retry_publisher_1.publish(
                 event.model_dump(),
                 headers=headers,
             )
 
         elif next_retry == 2:
-
             await payment_retry_publisher_2.publish(
                 event.model_dump(),
                 headers=headers,
             )
 
         elif next_retry == 3:
-
             await payment_retry_publisher_3.publish(
                 event.model_dump(),
                 headers=headers,
             )
 
         else:
-
             await payment_dlq_publisher.publish(
                 event.model_dump(),
                 headers=headers,

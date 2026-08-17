@@ -22,6 +22,9 @@ entrypoint = "app.main:app"
 pythonpath = ["."]
 asyncio_mode = "auto"
 
+[tool.ruff]
+exclude = ["alembic"]
+
 [dependency-groups]
 dev = [
     "ruff>=0.16.1",

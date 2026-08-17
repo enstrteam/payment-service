@@ -3,7 +3,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DatabaseSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_prefix="POSTGRES_")
+    model_config = SettingsConfigDict(
+        env_file=".env", extra="ignore", env_prefix="POSTGRES_"
+    )
 
     user: str
     password: SecretStr
@@ -24,7 +26,9 @@ class DatabaseSettings(BaseSettings):
 
 
 class RabbitMQSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_prefix="RABBITMQ_")
+    model_config = SettingsConfigDict(
+        env_file=".env", extra="ignore", env_prefix="RABBITMQ_"
+    )
 
     user: str
     password: SecretStr
@@ -43,7 +47,6 @@ class RabbitMQSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     api_key: SecretStr

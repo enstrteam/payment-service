@@ -9,7 +9,6 @@ PAYMENT_RETRY_3 = "payment.retry.3"
 PAYMENT_DLQ = "payment.dlq"
 
 
-
 payments_exchange = RabbitExchange(
     name="payments",
     type=ExchangeType.DIRECT,
@@ -22,13 +21,11 @@ payments_queue = RabbitQueue(
 )
 
 
-
 payments_dlx = RabbitExchange(
     name="payments.dlx",
     type=ExchangeType.DIRECT,
     durable=True,
 )
-
 
 
 payment_retry_queue_1 = RabbitQueue(

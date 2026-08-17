@@ -19,9 +19,7 @@ class OutboxService:
 
         result = await self.db.execute(
             select(Outbox)
-            .where(
-                Outbox.status == OutboxStatusEnum.PENDING
-            )
+            .where(Outbox.status == OutboxStatusEnum.PENDING)
             .order_by(Outbox.created_at)
             .limit(100)
         )

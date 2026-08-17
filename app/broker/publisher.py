@@ -15,7 +15,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-
 payments_publisher = broker.publisher(
     exchange=payments_exchange,
     routing_key=PAYMENT_CREATED,
@@ -40,6 +39,7 @@ payment_dlq_publisher = broker.publisher(
     exchange=payments_dlx,
     routing_key=PAYMENT_DLQ,
 )
+
 
 async def publish_payment_created(payload: dict):
     logger.info(f"Publish payment created: {payload}")

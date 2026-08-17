@@ -10,11 +10,12 @@ from app.models.payment import Payment
 
 
 class PaymentService:
-
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def create_payment(self, payment: PaymentCreate, idempotency_key: str) -> PaymentResponse:
+    async def create_payment(
+        self, payment: PaymentCreate, idempotency_key: str
+    ) -> PaymentResponse:
 
         existing_result = await self._get_payment_by_idempotency_key(idempotency_key)
 
@@ -60,14 +61,13 @@ class PaymentService:
                 status_code=404,
                 detail="Payment not found",
             )
-        return PaymentResponse.model_validate(payment)  
+        return PaymentResponse.model_validate(payment)
 
-
-    async def _get_payment_by_idempotency_key(self, idempotency_key: str) -> PaymentResponse:
+    async def _get_payment_by_idempotency_key(
+        self, idempotency_key: str
+    ) -> PaymentResponse:
         result = await self.db.execute(
-            select(Payment).where(
-                Payment.idempotency_key == idempotency_key
-            )
+            select(Payment).where(Payment.idempotency_key == idempotency_key)
         )
 
         return result.scalar_one_or_none()

@@ -8,5 +8,6 @@ async def main():
     async with broker:
         await run_outbox_worker()
 
+
 if __name__ == "__main__":
     asyncio.run(main())

@@ -14,14 +14,15 @@ async def create_payment(
     payment: PaymentCreate,
     db: DatabaseSession,
     idempotency_key: str = Header(..., alias="Idempotency-Key"),
-   ) -> PaymentResponse:
+) -> PaymentResponse:
     payment_service = PaymentService(db)
-    return await payment_service.create_payment(payment, idempotency_key)  
+    return await payment_service.create_payment(payment, idempotency_key)
+
 
 @router.get("/payments/{payment_id}", tags=["payments"])
-async def get_payment( 
+async def get_payment(
     payment_id: uuid.UUID,
     db: DatabaseSession,
 ) -> PaymentResponse:
-    payment_service = PaymentService(db) 
+    payment_service = PaymentService(db)
     return await payment_service.get_payment(payment_id)

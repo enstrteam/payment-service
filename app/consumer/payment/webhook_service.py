@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 class WebhookService:
-
     async def send(
         self,
         payment: Payment,
@@ -29,7 +28,6 @@ class WebhookService:
         async with httpx.AsyncClient(
             timeout=timeout,
         ) as client:
-
             response = await client.post(
                 payment.webhook_url,
                 json=payload,
