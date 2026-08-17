@@ -12,14 +12,15 @@ from app.core.settings import settings
 
 class Database:
     def __init__(self, db_url: str, echo: bool = False):
-        self._engine = create_async_engine(db_url, echo=echo, pool_pre_ping=True)
-        self._session: AsyncSession = async_sessionmaker(
-            bind=self._engine, autocommit=False
+        self._engine = create_async_engine(
+            db_url, echo=echo, pool_pre_ping=True)
+        self._session_factory: AsyncSession = async_sessionmaker(
+            bind=self._engine, autocommit=False, expire_on_commit=False, autoflush=False,
         )
 
     @asynccontextmanager
     async def session(self) -> AsyncGenerator[AsyncSession]:
-        session = self._session()
+        session = self._session_factory()
         try:
             yield session
         except Exception:

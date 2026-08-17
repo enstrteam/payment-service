@@ -29,3 +29,11 @@ class PaymentResponse(BaseSchema):
     created_at: datetime
     processed_at: datetime | None = None
     
+class PaymentCreatedEvent(BaseSchema):
+    payment_id: uuid.UUID
+    amount: Decimal
+    currency: CurrencyEnum
+    webhook_url: str
+    
+    description: str | None = None
+    meta: dict | None = None
