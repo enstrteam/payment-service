@@ -9,7 +9,7 @@ from app.dto.payment import PaymentCreate, PaymentResponse
 router = APIRouter()
 
 
-@router.post("/payments", status_code=202, tags=["payments"])
+@router.post("",status_code=202, tags=["payments"])
 async def create_payment(
     payment: PaymentCreate,
     db: DatabaseSession,
@@ -19,7 +19,7 @@ async def create_payment(
     return await payment_service.create_payment(payment, idempotency_key)
 
 
-@router.get("/payments/{payment_id}", tags=["payments"])
+@router.get("/{payment_id}", tags=["payments"])
 async def get_payment(
     payment_id: uuid.UUID,
     db: DatabaseSession,
