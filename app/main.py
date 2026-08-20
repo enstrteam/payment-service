@@ -1,8 +1,9 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
+from app.api.dependencies.auth import verify_api_key
 from app.api.router import router
 from app.core.logging import setup_logging
 
@@ -20,4 +21,4 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Payment Service", lifespan=lifespan)
 
-app.include_router(router, prefix="/api/v1", tags=["v1"])
+app.include_router(router, prefix="/api/v1", tags=["v1"], dependencies=[Depends(verify_api_key)])
