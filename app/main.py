@@ -21,4 +21,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Payment Service", lifespan=lifespan)
 
-app.include_router(router, prefix="/api/v1", tags=["v1"], dependencies=[Depends(verify_api_key)])
+app.include_router(
+    router, prefix="/api/v1", tags=["v1"], dependencies=[Depends(verify_api_key)]
+)

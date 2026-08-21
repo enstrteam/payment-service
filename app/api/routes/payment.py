@@ -2,14 +2,14 @@ import uuid
 
 from fastapi import APIRouter, Header
 
-from app.api.services.payment import PaymentService
 from app.core.dependencies.database import DatabaseSession
 from app.dto.payment import PaymentCreate, PaymentResponse
+from app.services.payment.service import PaymentService
 
 router = APIRouter()
 
 
-@router.post("",status_code=202, tags=["payments"])
+@router.post("", status_code=202, tags=["payments"])
 async def create_payment(
     payment: PaymentCreate,
     db: DatabaseSession,

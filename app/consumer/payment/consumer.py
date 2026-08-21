@@ -1,19 +1,21 @@
 import logging
 
 from faststream.rabbit import RabbitMessage
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.consumer.payment.payment_processor import PaymentProcessor
 from app.consumer.payment.retry_service import RetryService
 from app.consumer.payment.webhook_service import WebhookService
-from app.core.dependencies.faststream_database import DatabaseSession
 from app.dto.payment import PaymentCreatedEvent
+from app.repositories.payment import PaymentRepository
 
 logger = logging.getLogger(__name__)
 
 
 class PaymentConsumer:
-    def __init__(self, db: DatabaseSession) -> None:
-        self.payment_processor = PaymentProcessor(db)
+    def __init__(self, db: AsyncSession) -> None:
+        repository = PaymentRepository(db)
+        self.payment_processor = PaymentProcessor(repository, db)
         self.webhook_service = WebhookService()
         self.retry_service = RetryService()
 

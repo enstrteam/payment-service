@@ -3,17 +3,17 @@ import logging
 import random
 from datetime import UTC, datetime
 
-from sqlalchemy import select
-
 from app.core.dependencies.faststream_database import DatabaseSession
 from app.dto.payment import PaymentCreatedEvent
 from app.models.payment import Payment, PaymentStatusEnum
+from app.repositories.payment import PaymentRepository
 
 logger = logging.getLogger(__name__)
 
 
 class PaymentProcessor:
-    def __init__(self, db: DatabaseSession) -> None:
+    def __init__(self, repository: PaymentRepository, db: DatabaseSession) -> None:
+        self.repository = repository
         self.db = db
 
     async def _emulate_payment_processing(
@@ -33,30 +33,11 @@ class PaymentProcessor:
 
         return payment
 
-    async def get_payment(
-        self,
-        payment_id,
-    ) -> Payment:
-        result = await self.db.execute(
-            select(Payment).where(
-                Payment.id == payment_id,
-            ),
-        )
-
-        payment = result.scalar_one_or_none()
-
-        if payment is None:
-            raise ValueError(
-                f"Payment {payment_id} not found",
-            )
-
-        return payment
-
     async def process_payment(
         self,
         event: PaymentCreatedEvent,
     ) -> Payment:
-        payment = await self.get_payment(event.payment_id)
+        payment = await self.repository.get_by_id(event.payment_id)
 
         if payment.status != PaymentStatusEnum.PENDING:
             logger.info(
